@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to GenAI Financial Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .onboarding-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .welcome-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 16px;
+            background: linear-gradient(45deg, #FF6B6B, #4299e1, #48bb78);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: gradient 3s ease infinite;
+        }
+
+        .welcome-header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 50px;
+            position: relative;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #718096;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #4299e1;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .progress-step.completed {
+            background: #48bb78;
+            color: white;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #4299e1;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .step-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+            background: white;
+        }
+
+        .range-slider {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .range-slider input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #4299e1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .range-value {
+            position: absolute;
+            top: -40px;
+            padding: 8px 12px;
+            background: #4299e1;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        .range-slider:hover .range-value {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-back {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-next {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 200px;
+            height: 200px;
+            opacity: 0;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .checkbox-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4299e1;
+            background: white;
+        }
+
+        .checkbox-item.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .checkbox-item i {
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item.selected i {
+            animation: pulse 0.5s ease;
+            color: #4299e1;
+        }
+
+        .checkbox-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+        }
+
+        .checkbox-item:hover::before {
+            animation: shimmer 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+            color: #718096;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #2d3748;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #e53e3e !important;
+        }
+
+        .input-success {
+            border-color: #48bb78 !important;
+        }
+
+        /* Enhanced Animations */
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* India-specific Styles */
+        .indian-theme {
+            background: linear-gradient(135deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+            opacity: 0.1;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+
+        .state-selection {
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #4299e1 #e2e8f0;
+        }
+
+        .state-selection::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .state-selection::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+
+        .state-selection::-webkit-scrollbar-thumb {
+            background: #4299e1;
+            border-radius: 4px;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .rupee-input {
+            padding-left: 30px !important;
+        }
+
+        .rupee-symbol {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4299e1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.5s ease;
+            z-index: 1000;
+        }
+
+        .error-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e53e3e;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.5s ease;
+            z-index: 1000;
+        }
+
+        .success-message i,
+        .error-toast i {
+            font-size: 1.5rem;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBh-Bg8M-x-H856ci0xz7Uk9RVkf0aAfQ",
+            authDomain: "gdg1-6c9af.firebaseapp.com",
+            projectId: "gdg1-6c9af",
+            storageBucket: "gdg1-6c9af.firebasestorage.app",
+            messagingSenderId: "387159452511",
+            appId: "1:387159452511:web:2d8c93f4ed4164eddda4ea",
+            measurementId: "G-EDWY16PXJ1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make Firebase instances available globally
+        window.auth = auth;
+        window.db = db;
+
+        // Initialize onboarding functionality
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                // No user is signed in, redirect to login
+                window.location.href = '/login.html';
+                return;
+            }
+        });
+
+        // Check authentication before allowing onboarding
+        function checkAuth() {
+            const user = auth.currentUser;
+            if (!user) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-toast';
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Please login to continue with onboarding</p>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    errorDiv.remove();
+                    window.location.href = '/login.html';
+                }, 2000);
+                return false;
+            }
+            return true;
+        }
+
+        // Modify the nextStep function to check auth
+        window.nextStep = async () => {
+            if (!checkAuth()) return;
+            
+            if (currentStep < totalSteps) {
+                if (validateStep(currentStep)) {
+                    showLoading();
+                    try {
+                        await saveProgress(currentStep);
+                        document.querySelector(`#step${currentStep}`).classList.remove('active');
+                        currentStep++;
+                        document.querySelector(`#step${currentStep}`).classList.add('active');
+                        updateProgress();
+                    } catch (error) {
+                        console.error('Error saving progress:', error);
+                    } finally {
+                        hideLoading();
+                    }
+                }
+            }
+        };
+
+        window.prevStep = () => {
+            if (currentStep > 1) {
+                document.querySelector(`#step${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.querySelector(`#step${currentStep}`).classList.add('active');
+                updateProgress();
+            }
+        };
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.querySelector('.progress-line-fill').style.width = `${progress}%`;
+            
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            const requiredFields = {
+                1: ['fullName', 'age'],
+                2: ['emergencyFund'],
+                3: ['timeHorizon'],
+                4: ['riskScenario1', 'investmentGoal']
+            };
+
+            if (requiredFields[step]) {
+                requiredFields[step].forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    const errorMessage = field.nextElementSibling;
+                    
+                    if (!field.value) {
+                        field.classList.add('input-error');
+                        if (errorMessage && errorMessage.classList.contains('error-message')) {
+                            errorMessage.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else {
+                        field.classList.remove('input-error');
+                        if (errorMessage && errorMessage.classList.contains('error-message')) {
+                            errorMessage.style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            return isValid;
+        }
+
+        // Initialize range slider functionality
+        document.querySelectorAll('input[type="range"]').forEach(range => {
+            const valueDisplay = range.parentElement.querySelector('.range-value');
+            
+            range.addEventListener('input', (e) => {
+                const value = e.target.value;
+                valueDisplay.textContent = `$${Number(value).toLocaleString()}`;
+                valueDisplay.style.left = `${(value - range.min) * 100 / (range.max - range.min)}%`;
+                valueDisplay.style.display = 'block';
+            });
+        });
+
+        // Initialize checkbox group functionality
+        document.querySelectorAll('.checkbox-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('selected');
+            });
+        });
+
+        // Modify the finishOnboarding function
+        window.finishOnboarding = async () => {
+            if (!checkAuth()) return;
+
+            if (validateStep(currentStep)) {
+                showLoading();
+                try {
+                    const user = auth.currentUser;
+                    const onboardingData = {
+                        personalInfo: {
+                            fullName: document.getElementById('fullName').value,
+                            age: document.getElementById('age').value,
+                            state: document.getElementById('state').value,
+                            monthlyIncome: document.getElementById('monthlyIncome').value,
+                            occupation: document.getElementById('occupation').value
+                        },
+                        financialHealth: {
+                            monthlySavings: document.getElementById('monthlySavings').value,
+                            emergencyFund: document.getElementById('emergencyFund').value,
+                            investments: Array.from(document.querySelectorAll('#step2 .checkbox-item.selected'))
+                                .map(item => item.dataset.value),
+                            loans: Array.from(document.querySelectorAll('#step2 .loan-checkbox-item.selected'))
+                                .map(item => item.dataset.value)
+                        },
+                        goals: {
+                            timeHorizon: document.getElementById('timeHorizon').value,
+                            investmentCapacity: document.getElementById('investmentCapacity').value,
+                            priorities: Array.from(document.querySelectorAll('#step3 .checkbox-item.selected'))
+                                .map(item => item.dataset.value)
+                        },
+                        riskProfile: {
+                            riskScenario: document.getElementById('riskScenario1').value,
+                            investmentGoal: document.getElementById('investmentGoal').value,
+                            knowledgeLevel: document.getElementById('knowledgeLevel').value,
+                            taxSavingInvestments: Array.from(document.querySelectorAll('#step4 .checkbox-item.selected'))
+                                .map(item => item.dataset.value)
+                        },
+                        metadata: {
+                            completedAt: new Date().toISOString(),
+                            lastUpdated: new Date().toISOString(),
+                            version: '1.0',
+                            userId: user.uid
+                        }
+                    };
+
+                    // Validate data before saving
+                    validateData(onboardingData);
+
+                    // Save to Firestore
+                    await setDoc(doc(db, 'users', user.uid), {
+                        onboardingComplete: true,
+                        onboardingData,
+                        onboardingProgress: {
+                            currentStep: totalSteps,
+                            isComplete: true,
+                            completedAt: new Date().toISOString()
+                        }
+                    }, { merge: true });
+
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <p>Profile completed successfully!</p>
+                    `;
+                    document.querySelector('.onboarding-container').appendChild(successMessage);
+
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Error saving onboarding data:', error);
+                    
+                    // Show error message to user
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-toast';
+                    errorDiv.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>${error.message || 'There was an error saving your information. Please try again.'}</p>
+                    `;
+                    document.body.appendChild(errorDiv);
+                    
+                    setTimeout(() => {
+                        errorDiv.remove();
+                    }, 5000);
+                } finally {
+                    hideLoading();
+                }
+            }
+        };
+
+        // Show loading overlay during transitions
+        function showLoading() {
+            document.querySelector('.loading-overlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.querySelector('.loading-overlay').style.display = 'none';
+        }
+
+        // Format currency values
+        function formatIndianCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Update range slider displays
+        document.querySelectorAll('input[type="range"]').forEach(range => {
+            const valueDisplay = range.parentElement.querySelector('.range-value');
+            
+            range.addEventListener('input', (e) => {
+                const value = e.target.value;
+                valueDisplay.textContent = formatIndianCurrency(value);
+                valueDisplay.style.left = `${(value - range.min) * 100 / (range.max - range.min)}%`;
+                valueDisplay.style.display = 'block';
+            });
+        });
+
+        // Add animation to form groups
+        document.querySelectorAll('.form-group').forEach(group => {
+            group.classList.add('animate');
+        });
+
+        // Enhanced checkbox interaction
+        document.querySelectorAll('.checkbox-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('selected');
+                const icon = item.querySelector('i');
+                icon.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // Add these functions after Firebase initialization
+        
+        // Function to save progress after each step
+        async function saveProgress(step) {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const stepData = collectStepData(step);
+                if (!stepData) return;
+
+                await setDoc(doc(db, 'users', user.uid), {
+                    onboardingProgress: {
+                        currentStep: step,
+                        lastUpdated: new Date().toISOString(),
+                        [`step${step}Data`]: stepData
+                    }
+                }, { merge: true });
+
+            } catch (error) {
+                console.error('Error saving progress:', error);
+                // Silent fail for progress saving
+            }
+        }
+
+        // Function to collect data for each step
+        function collectStepData(step) {
+            switch(step) {
+                case 1:
+                    return {
+                        fullName: document.getElementById('fullName').value,
+                        age: document.getElementById('age').value,
+                        state: document.getElementById('state').value,
+                        monthlyIncome: document.getElementById('monthlyIncome').value,
+                        occupation: document.getElementById('occupation').value
+                    };
+                case 2:
+                    return {
+                        monthlySavings: document.getElementById('monthlySavings').value,
+                        emergencyFund: document.getElementById('emergencyFund').value,
+                        investments: Array.from(document.querySelectorAll('#step2 .checkbox-item.selected'))
+                            .map(item => item.dataset.value),
+                        loans: Array.from(document.querySelectorAll('#step2 .loan-checkbox-item.selected'))
+                            .map(item => item.dataset.value)
+                    };
+                case 3:
+                    return {
+                        timeHorizon: document.getElementById('timeHorizon').value,
+                        investmentCapacity: document.getElementById('investmentCapacity').value,
+                        priorities: Array.from(document.querySelectorAll('#step3 .checkbox-item.selected'))
+                            .map(item => item.dataset.value)
+                    };
+                case 4:
+                    return {
+                        riskScenario: document.getElementById('riskScenario1').value,
+                        investmentGoal: document.getElementById('investmentGoal').value,
+                        knowledgeLevel: document.getElementById('knowledgeLevel').value,
+                        taxSavingInvestments: Array.from(document.querySelectorAll('#step4 .checkbox-item.selected'))
+                            .map(item => item.dataset.value)
+                    };
+                default:
+                    return null;
+            }
+        }
+
+        // Function to validate data before saving
+        function validateData(data) {
+            // Required fields validation
+            const requiredFields = {
+                personalInfo: ['fullName', 'age', 'state'],
+                financialHealth: ['emergencyFund'],
+                goals: ['timeHorizon'],
+                riskProfile: ['riskScenario', 'investmentGoal']
+            };
+
+            for (const [section, fields] of Object.entries(requiredFields)) {
+                for (const field of fields) {
+                    if (!data[section] || !data[section][field]) {
+                        throw new Error(`Missing required field: ${field} in ${section}`);
+                    }
+                }
+            }
+
+            // Age validation
+            if (data.personalInfo.age < 18 || data.personalInfo.age > 100) {
+                throw new Error('Age must be between 18 and 100');
+            }
+
+            // Income validation
+            if (data.personalInfo.monthlyIncome < 0) {
+                throw new Error('Monthly income cannot be negative');
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="indian-theme"></div>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="onboarding-container">
+        <div class="welcome-header">
+            <h1>Welcome to Your Financial Journey</h1>
+            <p>Let's personalize your experience to help you achieve your financial goals</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-line">
+                <div class="progress-line-fill"></div>
+            </div>
+            <div class="progress-step active" data-step="1">1</div>
+            <div class="progress-step" data-step="2">2</div>
+            <div class="progress-step" data-step="3">3</div>
+            <div class="progress-step" data-step="4">4</div>
+        </div>
+
+        <!-- Step 1: Personal Profile -->
+        <div class="step-content active" id="step1">
+            <h2>Tell us about yourself</h2>
+            <div class="form-group">
+                <label for="fullName">Full Name <span class="required">*</span></label>
+                <div class="input-with-icon">
+                    <input type="text" id="fullName" required placeholder="Enter your full name">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="error-message">Please enter your full name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age <span class="required">*</span></label>
+                <div class="input-with-icon">
+                    <input type="number" id="age" required min="18" max="100" placeholder="Enter your age">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="error-message">Please enter a valid age between 18 and 100</div>
+            </div>
+
+            <div class="form-group">
+                <label for="state">State <span class="required">*</span></label>
+                <select id="state" required class="state-selection">
+                    <option value="">Select your state</option>
+                    <option value="AN">Andaman and Nicobar Islands</option>
+                    <option value="AP">Andhra Pradesh</option>
+                    <option value="AR">Arunachal Pradesh</option>
+                    <option value="AS">Assam</option>
+                    <option value="BR">Bihar</option>
+                    <option value="CH">Chandigarh</option>
+                    <option value="CT">Chhattisgarh</option>
+                    <option value="DN">Dadra and Nagar Haveli</option>
+                    <option value="DD">Daman and Diu</option>
+                    <option value="DL">Delhi</option>
+                    <option value="GA">Goa</option>
+                    <option value="GJ">Gujarat</option>
+                    <option value="HR">Haryana</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="JK">Jammu and Kashmir</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="KA">Karnataka</option>
+                    <option value="KL">Kerala</option>
+                    <option value="LA">Ladakh</option>
+                    <option value="LD">Lakshadweep</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="MN">Manipur</option>
+                    <option value="ML">Meghalaya</option>
+                    <option value="MZ">Mizoram</option>
+                    <option value="NL">Nagaland</option>
+                    <option value="OR">Odisha</option>
+                    <option value="PY">Puducherry</option>
+                    <option value="PB">Punjab</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="SK">Sikkim</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="TG">Telangana</option>
+                    <option value="TR">Tripura</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="UT">Uttarakhand</option>
+                    <option value="WB">West Bengal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="monthlyIncome">Monthly Income (₹)</label>
+                <div class="range-slider">
+                    <span class="range-value">₹50,000</span>
+                    <input type="range" id="monthlyIncome" min="0" max="1000000" step="5000" value="50000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="occupation">Employment Status</label>
+                <select id="occupation">
+                    <option value="">Select your employment status</option>
+                    <option value="salaried">Salaried Employee</option>
+                    <option value="business">Business Owner</option>
+                    <option value="professional">Professional (Doctor/CA/Lawyer etc.)</option>
+                    <option value="government">Government Employee</option>
+                    <option value="student">Student</option>
+                    <option value="retired">Retired</option>
+                    <option value="homemaker">Homemaker</option>
+                    <option value="unemployed">Currently Unemployed</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <div></div>
+                <button class="btn btn-next" onclick="nextStep()">Continue <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Step 2: Financial Health Check -->
+        <div class="step-content" id="step2">
+            <h2>Your Financial Health Check</h2>
+            
+            <div class="form-group">
+                <label>Current Monthly Savings</label>
+                <div class="range-slider">
+                    <span class="range-value">$500</span>
+                    <input type="range" id="monthlySavings" min="0" max="10000" step="100" value="500">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Do you have any existing investments?</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" data-value="stocks">
+                        <i class="fas fa-chart-line"></i> Stocks
+                    </div>
+                    <div class="checkbox-item" data-value="crypto">
+                        <i class="fab fa-bitcoin"></i> Cryptocurrency
+                    </div>
+                    <div class="checkbox-item" data-value="real-estate">
+                        <i class="fas fa-home"></i> Real Estate
+                    </div>
+                    <div class="checkbox-item" data-value="mutual-funds">
+                        <i class="fas fa-money-bill-wave"></i> Mutual Funds
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Emergency Fund Status</label>
+                <select id="emergencyFund">
+                    <option value="">Select your emergency fund status</option>
+                    <option value="none">No emergency fund</option>
+                    <option value="1-month">1 month of expenses</option>
+                    <option value="3-months">3 months of expenses</option>
+                    <option value="6-months">6+ months of expenses</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-next" onclick="nextStep()">Continue <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Step 3: Financial Goals -->
+        <div class="step-content" id="step3">
+            <h2>Your Financial Goals</h2>
+            
+            <div class="form-group">
+                <label>What are your top financial priorities?</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" data-value="emergency-fund">
+                        <i class="fas fa-shield-alt"></i> Build Emergency Fund
+                    </div>
+                    <div class="checkbox-item" data-value="retirement">
+                        <i class="fas fa-umbrella-beach"></i> Retirement Planning
+                    </div>
+                    <div class="checkbox-item" data-value="invest">
+                        <i class="fas fa-chart-pie"></i> Investment Growth
+                    </div>
+                    <div class="checkbox-item" data-value="debt">
+                        <i class="fas fa-hand-holding-usd"></i> Debt Repayment
+                    </div>
+                    <div class="checkbox-item" data-value="house">
+                        <i class="fas fa-home"></i> Buy a House
+                    </div>
+                    <div class="checkbox-item" data-value="education">
+                        <i class="fas fa-graduation-cap"></i> Education Savings
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="timeHorizon">Investment Time Horizon</label>
+                <select id="timeHorizon">
+                    <option value="">Select your investment timeline</option>
+                    <option value="short">Short term (< 2 years)</option>
+                    <option value="medium">Medium term (2-5 years)</option>
+                    <option value="long">Long term (5+ years)</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-next" onclick="nextStep()">Continue <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Step 4: Risk Profile -->
+        <div class="step-content" id="step4">
+            <h2>Understanding Your Risk Tolerance</h2>
+            
+            <div class="form-group">
+                <label>If your investment dropped 20% in value, what would you do?</label>
+                <select id="riskScenario1">
+                    <option value="">Select your likely response</option>
+                    <option value="sell">Sell everything to prevent further losses</option>
+                    <option value="wait">Wait it out and make no changes</option>
+                    <option value="buy">Buy more while prices are low</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>What's your primary investment goal?</label>
+                <select id="investmentGoal">
+                    <option value="">Select your primary goal</option>
+                    <option value="preserve">Preserve my wealth with minimal risk</option>
+                    <option value="balanced">Balance between growth and safety</option>
+                    <option value="aggressive">Maximize returns, comfortable with volatility</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Investment Knowledge Level</label>
+                <select id="knowledgeLevel">
+                    <option value="">Select your knowledge level</option>
+                    <option value="beginner">Beginner - Still learning the basics</option>
+                    <option value="intermediate">Intermediate - Understand most concepts</option>
+                    <option value="advanced">Advanced - Very knowledgeable</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-back" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-next" onclick="finishOnboarding()">Complete Profile <i class="fas fa-check"></i></button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

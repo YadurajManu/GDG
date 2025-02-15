@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify 2FA - GenAI Financial Assistant</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-theme="light">
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="index.html" class="auth-logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                GenAI Finance
+            </a>
+            
+            <h1>Two-Factor Authentication</h1>
+            <p class="auth-subtitle">Enter the 6-digit code from your authenticator app</p>
+            
+            <div class="otp-container">
+                <div class="otp-inputs">
+                    <input type="text" maxlength="1" class="otp-input" autofocus>
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                </div>
+                
+                <div class="otp-timer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Code expires in <span id="timer">30</span> seconds
+                </div>
+                
+                <button class="auth-button verify-otp-btn">
+                    Verify Code
+                    <div class="button-loader"></div>
+                </button>
+                
+                <div class="auth-links">
+                    <button class="text-button" id="resendCode">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 2v6h-6M3 12a9 9 0 0115.9-5.7M3 22v-6h6m12-4a9 9 0 01-15.9 5.7" 
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Resend Code
+                    </button>
+                    
+                    <button class="text-button" id="useBackupCode">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 15v3m0 0v3m0-3h3m-3 0H9m12-3a9 9 0 11-18 0 9 9 0 0118 0z" 
+                                stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Use Backup Code
+                    </button>
+                </div>
+            </div>
+            
+            <div class="backup-code-form" style="display: none;">
+                <h2>Enter Backup Code</h2>
+                <p class="auth-subtitle">Enter one of your backup codes (format: XXXX-XXXX-XXXX)</p>
+                
+                <div class="input-group">
+                    <input type="text" id="backupCode" placeholder="Enter backup code">
+                    <button class="auth-button verify-backup-btn">
+                        Verify
+                        <div class="button-loader"></div>
+                    </button>
+                </div>
+                
+                <button class="text-button" id="backToOTP">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M19 12H5m7 7l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to 2FA Code
+                </button>
+            </div>
+            
+            <div class="need-help">
+                <p>Having trouble? <a href="support.html">Contact Support</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeToggle" aria-label="Toggle dark mode">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html> 

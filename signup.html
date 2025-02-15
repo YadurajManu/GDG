@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - GenAI Financial Assistant</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    
+    <!-- Firebase Config -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/auth-service.js"></script>
+    <script type="module" src="js/database-service.js"></script>
+</head>
+<body data-theme="light">
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" 
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>GDG</span>
+            </a>
+            
+            <h1>Create Account</h1>
+            <p class="auth-subtitle">Start your investment journey today</p>
+            
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Create a strong password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+                </div>
+                
+                <button type="submit" class="auth-submit">
+                    Create Account
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M17 11h6" 
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <p class="auth-footer">
+                Already have an account? <a href="login.html">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import authService from './js/auth-service.js';
+        import { analytics } from './js/firebase-config.js';
+        import { logEvent } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js';
+
+        const signupForm = document.getElementById('signupForm');
+        
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Disable the submit button to prevent double submission
+            const submitButton = document.querySelector('.auth-submit');
+            submitButton.disabled = true;
+            submitButton.innerHTML = 'Creating Account...';
+            
+            if (password !== confirmPassword) {
+                alert("Passwords don't match!");
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Create Account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M17 11h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                return;
+            }
+            
+            try {
+                console.log('Starting signup process...', { email, name });
+                const user = await authService.signUp(email, password, {
+                    name,
+                    createdAt: new Date().toISOString()
+                });
+                
+                console.log('Signup successful:', user);
+                
+                // Log signup event to analytics
+                if (analytics) {
+                    logEvent(analytics, 'sign_up', {
+                        method: 'email'
+                    });
+                }
+                
+                // Check if user was actually created
+                if (user && user.uid) {
+                    console.log('Redirecting to dashboard...');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    throw new Error('Failed to create user account - no user ID returned');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Create Account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M17 11h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                
+                // Log error to analytics
+                if (analytics) {
+                    logEvent(analytics, 'sign_up_error', {
+                        error_code: error.code || 'unknown',
+                        error_message: error.message
+                    });
+                }
+                
+                // Show a more user-friendly error message
+                let errorMessage = 'An error occurred during signup. Please try again.';
+                
+                if (error.code) {
+                    errorMessage = getErrorMessage(error.code);
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                alert(errorMessage);
+            }
+        });
+
+        // Function to get user-friendly error messages
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/email-already-in-use':
+                    return 'This email is already registered. Please try logging in instead.';
+                case 'auth/invalid-email':
+                    return 'Please enter a valid email address.';
+                case 'auth/operation-not-allowed':
+                    return 'Email/password accounts are not enabled. Please contact support.';
+                case 'auth/weak-password':
+                    return 'Please choose a stronger password (at least 6 characters).';
+                case 'auth/network-request-failed':
+                    return 'Network error. Please check your internet connection.';
+                case 'auth/internal-error':
+                    return 'An internal error occurred. Please try again later.';
+                default:
+                    return `Signup error: ${errorCode}. Please try again.`;
+            }
+        }
+    </script>
+</body>
+</html> 
